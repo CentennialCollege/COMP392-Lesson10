@@ -69,14 +69,19 @@ var game = (() => {
     var directionLineMaterial: LineBasicMaterial;
     var directionLineGeometry: Geometry;
     var directionLine: Line;
-    
+
     // CreateJS Related Variables
     var assets: createjs.LoadQueue;
     var canvas: HTMLElement;
     var stage: createjs.Stage;
+    var scoreLabel: createjs.Text;
+    var livesLabel: createjs.Text;
+    var scoreValue: number;
+    var livesValue: number;
+
 
     var manifest = [
-        {id: "land", src:"../../Assets/audio/Land.wav"}
+        { id: "land", src: "../../Assets/audio/Land.wav" }
     ];
 
     function preload(): void {
@@ -85,13 +90,41 @@ var game = (() => {
         assets.on("complete", init, this);
         assets.loadManifest(manifest);
     }
-    
+
     function setupCanvas(): void {
         canvas = document.getElementById("canvas");
         canvas.setAttribute("width", config.Screen.WIDTH.toString());
         canvas.setAttribute("height", (config.Screen.HEIGHT * 0.1).toString());
         canvas.style.backgroundColor = "#000000";
         stage = new createjs.Stage(canvas);
+    }
+
+    function setupScoreboard(): void {
+        // initialize  score and lives values
+        scoreValue = 0;
+        livesValue = 5;
+
+        // Add Lives Label
+        livesLabel = new createjs.Text(
+            "LIVES: " + livesValue,
+            "40px Consolas",
+            "#ffffff"
+        );
+        livesLabel.x = config.Screen.WIDTH * 0.1;
+        livesLabel.y = (config.Screen.HEIGHT * 0.15) * 0.20;
+        stage.addChild(livesLabel);
+        console.log("Added Lives Label to stage");
+
+        // Add Score Label
+        scoreLabel = new createjs.Text(
+            "SCORE: " + scoreValue,
+            "40px Consolas",
+            "#ffffff"
+        );
+        scoreLabel.x = config.Screen.WIDTH * 0.8;
+        scoreLabel.y = (config.Screen.HEIGHT * 0.15) * 0.20;
+        stage.addChild(scoreLabel);
+        console.log("Added Score Label to stage");
     }
 
     function init(): void {
@@ -101,6 +134,9 @@ var game = (() => {
 
         // Set Up CreateJS Canvas and Stage
         setupCanvas();
+
+        // Set Up Scoreboard
+        setupScoreboard();
         
         //check to see if pointerlock is supported
         havePointerLock = 'pointerLockElement' in document ||
@@ -283,8 +319,12 @@ var game = (() => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
+
         canvas.style.width = "100%";
+        livesLabel.x = config.Screen.WIDTH * 0.1;
+        livesLabel.y = (config.Screen.HEIGHT * 0.15) * 0.20;
+        scoreLabel.x = config.Screen.WIDTH * 0.8;
+        scoreLabel.y = (config.Screen.HEIGHT * 0.15) * 0.20;
         stage.update();
     }
 
