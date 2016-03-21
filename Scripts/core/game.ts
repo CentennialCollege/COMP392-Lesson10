@@ -69,7 +69,11 @@ var game = (() => {
     var directionLineMaterial: LineBasicMaterial;
     var directionLineGeometry: Geometry;
     var directionLine: Line;
+    
+    // CreateJS Related Variables
     var assets: createjs.LoadQueue;
+    var canvas: HTMLElement;
+    var stage: createjs.Stage;
 
     var manifest = [
         {id: "land", src:"../../Assets/audio/Land.wav"}
@@ -81,12 +85,23 @@ var game = (() => {
         assets.on("complete", init, this);
         assets.loadManifest(manifest);
     }
+    
+    function setupCanvas(): void {
+        canvas = document.getElementById("canvas");
+        canvas.setAttribute("width", config.Screen.WIDTH.toString());
+        canvas.setAttribute("height", (config.Screen.HEIGHT * 0.1).toString());
+        canvas.style.backgroundColor = "#000000";
+        stage = new createjs.Stage(canvas);
+    }
 
     function init(): void {
         // Create to HTMLElements
         blocker = document.getElementById("blocker");
         instructions = document.getElementById("instructions");
 
+        // Set Up CreateJS Canvas and Stage
+        setupCanvas();
+        
         //check to see if pointerlock is supported
         havePointerLock = 'pointerLockElement' in document ||
             'mozPointerLockElement' in document ||
@@ -196,6 +211,7 @@ var game = (() => {
             if (event.name === "Ground") {
                 console.log("player hit the ground");
                 isGrounded = true;
+                createjs.Sound.play("land");
             }
             if (event.name === "Sphere") {
                 console.log("player hit the sphere");
@@ -267,6 +283,9 @@ var game = (() => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        canvas.style.width = "100%";
+        stage.update();
     }
 
     // Add Frame Rate Stats to the Scene
@@ -284,9 +303,7 @@ var game = (() => {
         stats.update();
 
         checkControls();
-
-
-
+        stage.update();
 
         // render using requestAnimationFrame
         requestAnimationFrame(gameLoop);

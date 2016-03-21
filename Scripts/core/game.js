@@ -63,7 +63,10 @@ var game = (function () {
     var directionLineMaterial;
     var directionLineGeometry;
     var directionLine;
+    // CreateJS Related Variables
     var assets;
+    var canvas;
+    var stage;
     var manifest = [
         { id: "land", src: "../../Assets/audio/Land.wav" }
     ];
@@ -73,10 +76,19 @@ var game = (function () {
         assets.on("complete", init, this);
         assets.loadManifest(manifest);
     }
+    function setupCanvas() {
+        canvas = document.getElementById("canvas");
+        canvas.setAttribute("width", config.Screen.WIDTH.toString());
+        canvas.setAttribute("height", (config.Screen.HEIGHT * 0.1).toString());
+        canvas.style.backgroundColor = "#000000";
+        stage = new createjs.Stage(canvas);
+    }
     function init() {
         // Create to HTMLElements
         blocker = document.getElementById("blocker");
         instructions = document.getElementById("instructions");
+        // Set Up CreateJS Canvas and Stage
+        setupCanvas();
         //check to see if pointerlock is supported
         havePointerLock = 'pointerLockElement' in document ||
             'mozPointerLockElement' in document ||
@@ -166,6 +178,7 @@ var game = (function () {
             if (event.name === "Ground") {
                 console.log("player hit the ground");
                 isGrounded = true;
+                createjs.Sound.play("land");
             }
             if (event.name === "Sphere") {
                 console.log("player hit the sphere");
@@ -229,6 +242,8 @@ var game = (function () {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        canvas.style.width = "100%";
+        stage.update();
     }
     // Add Frame Rate Stats to the Scene
     function addStatsObject() {
@@ -243,6 +258,7 @@ var game = (function () {
     function gameLoop() {
         stats.update();
         checkControls();
+        stage.update();
         // render using requestAnimationFrame
         requestAnimationFrame(gameLoop);
         // render the scene
@@ -322,5 +338,4 @@ var game = (function () {
         scene: scene
     };
 })();
-
 //# sourceMappingURL=game.js.map
