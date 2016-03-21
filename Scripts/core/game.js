@@ -22,7 +22,6 @@ var Object3D = THREE.Object3D;
 var SpotLight = THREE.SpotLight;
 var PointLight = THREE.PointLight;
 var AmbientLight = THREE.AmbientLight;
-var GUI = dat.GUI;
 var Color = THREE.Color;
 var Vector3 = THREE.Vector3;
 var Face3 = THREE.Face3;
@@ -39,8 +38,6 @@ var game = (function () {
     var scene = new Scene(); // Instantiate Scene Object
     var renderer;
     var camera;
-    var control;
-    var gui;
     var stats;
     var blocker;
     var instructions;
@@ -129,7 +126,7 @@ var game = (function () {
         groundTexture.wrapS = THREE.RepeatWrapping;
         groundTexture.wrapT = THREE.RepeatWrapping;
         groundTexture.repeat.set(8, 8);
-        groundTextureNormal = new THREE.TextureLoader().load('../../Assets/images/GravelCobbleNormal.jpg');
+        groundTextureNormal = new THREE.TextureLoader().load('../../Assets/images/GravelCobbleNormal.png');
         groundTextureNormal.wrapS = THREE.RepeatWrapping;
         groundTextureNormal.wrapT = THREE.RepeatWrapping;
         groundTextureNormal.repeat.set(8, 8);

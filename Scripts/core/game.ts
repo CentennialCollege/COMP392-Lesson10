@@ -24,17 +24,11 @@ import Object3D = THREE.Object3D;
 import SpotLight = THREE.SpotLight;
 import PointLight = THREE.PointLight;
 import AmbientLight = THREE.AmbientLight;
-import Control = objects.Control;
-import GUI = dat.GUI;
 import Color = THREE.Color;
 import Vector3 = THREE.Vector3;
 import Face3 = THREE.Face3;
-import Point = objects.Point;
 import CScreen = config.Screen;
 import Clock = THREE.Clock;
-
-//Custom Game Objects
-import gameObject = objects.gameObject;
 
 // Setup a Web Worker for Physijs
 Physijs.scripts.worker = "/Scripts/lib/Physijs/physijs_worker.js";
@@ -50,8 +44,6 @@ var game = (() => {
     var scene: Scene = new Scene(); // Instantiate Scene Object
     var renderer: Renderer;
     var camera: PerspectiveCamera;
-    var control: Control;
-    var gui: GUI;
     var stats: Stats;
     var blocker: HTMLElement;
     var instructions: HTMLElement;
@@ -157,7 +149,7 @@ var game = (() => {
         groundTexture.wrapT = THREE.RepeatWrapping;
         groundTexture.repeat.set(8, 8);
 
-        groundTextureNormal = new THREE.TextureLoader().load('../../Assets/images/GravelCobbleNormal.jpg');
+        groundTextureNormal = new THREE.TextureLoader().load('../../Assets/images/GravelCobbleNormal.png');
         groundTextureNormal.wrapS = THREE.RepeatWrapping;
         groundTextureNormal.wrapT = THREE.RepeatWrapping;
         groundTextureNormal.repeat.set(8, 8);
