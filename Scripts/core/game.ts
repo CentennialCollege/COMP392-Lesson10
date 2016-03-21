@@ -212,8 +212,7 @@ var game = (() => {
 
         // create parent-child relationship with camera and player
         player.add(camera);
-        camera.position.set(0, 1, 0);
-        
+        camera.position.set(0, 1, 0);  
 
         // Sphere Object
         sphereGeometry = new SphereGeometry(2, 32, 32);
@@ -225,11 +224,6 @@ var game = (() => {
         sphere.name = "Sphere";
         //scene.add(sphere);
         //console.log("Added Sphere to Scene");
-
-        // add controls
-        gui = new GUI();
-        control = new Control();
-        addControl(control);
 
         // Add framerate stats
         addStatsObject();
@@ -272,10 +266,6 @@ var game = (() => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function addControl(controlObject: Control): void {
-        /* ENTER CODE for the GUI CONTROL HERE */
     }
 
     // Add Frame Rate Stats to the Scene

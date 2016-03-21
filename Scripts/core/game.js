@@ -22,16 +22,12 @@ var Object3D = THREE.Object3D;
 var SpotLight = THREE.SpotLight;
 var PointLight = THREE.PointLight;
 var AmbientLight = THREE.AmbientLight;
-var Control = objects.Control;
 var GUI = dat.GUI;
 var Color = THREE.Color;
 var Vector3 = THREE.Vector3;
 var Face3 = THREE.Face3;
-var Point = objects.Point;
 var CScreen = config.Screen;
 var Clock = THREE.Clock;
-//Custom Game Objects
-var gameObject = objects.gameObject;
 // Setup a Web Worker for Physijs
 Physijs.scripts.worker = "/Scripts/lib/Physijs/physijs_worker.js";
 Physijs.scripts.ammo = "/Scripts/lib/Physijs/examples/js/ammo.js";
@@ -190,10 +186,6 @@ var game = (function () {
         sphere.name = "Sphere";
         //scene.add(sphere);
         //console.log("Added Sphere to Scene");
-        // add controls
-        gui = new GUI();
-        control = new Control();
-        addControl(control);
         // Add framerate stats
         addStatsObject();
         console.log("Added Stats to scene...");
@@ -231,9 +223,6 @@ var game = (function () {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    function addControl(controlObject) {
-        /* ENTER CODE for the GUI CONTROL HERE */
     }
     // Add Frame Rate Stats to the Scene
     function addStatsObject() {
@@ -327,4 +316,5 @@ var game = (function () {
         scene: scene
     };
 })();
+
 //# sourceMappingURL=game.js.map
