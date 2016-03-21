@@ -69,8 +69,20 @@ var game = (() => {
     var directionLineMaterial: LineBasicMaterial;
     var directionLineGeometry: Geometry;
     var directionLine: Line;
+    var assets: createjs.LoadQueue;
 
-    function init() {
+    var manifest = [
+        {id: "land", src:"../../Assets/audio/Land.wav"}
+    ];
+
+    function preload(): void {
+        assets = new createjs.LoadQueue();
+        assets.installPlugin(createjs.Sound);
+        assets.on("complete", init, this);
+        assets.loadManifest(manifest);
+    }
+
+    function init(): void {
         // Create to HTMLElements
         blocker = document.getElementById("blocker");
         instructions = document.getElementById("instructions");
@@ -181,9 +193,6 @@ var game = (() => {
 
         // Collision Check
         player.addEventListener('collision', (event) => {
-
-            console.log(event);
-
             if (event.name === "Ground") {
                 console.log("player hit the ground");
                 isGrounded = true;
@@ -204,7 +213,7 @@ var game = (() => {
 
         // create parent-child relationship with camera and player
         player.add(camera);
-        camera.position.set(0, 1, 0);  
+        camera.position.set(0, 1, 0);
 
         // Sphere Object
         sphereGeometry = new SphereGeometry(2, 32, 32);
@@ -370,7 +379,7 @@ var game = (() => {
         console.log("Finished setting up Camera...");
     }
 
-    window.onload = init;
+    window.onload = preload;
 
     return {
         scene: scene

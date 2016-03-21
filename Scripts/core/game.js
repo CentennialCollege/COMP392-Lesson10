@@ -63,6 +63,16 @@ var game = (function () {
     var directionLineMaterial;
     var directionLineGeometry;
     var directionLine;
+    var assets;
+    var manifest = [
+        { id: "land", src: "../../Assets/audio/Land.wav" }
+    ];
+    function preload() {
+        assets = new createjs.LoadQueue();
+        assets.installPlugin(createjs.Sound);
+        assets.on("complete", init, this);
+        assets.loadManifest(manifest);
+    }
     function init() {
         // Create to HTMLElements
         blocker = document.getElementById("blocker");
@@ -153,7 +163,6 @@ var game = (function () {
         console.log("Added Player to Scene");
         // Collision Check
         player.addEventListener('collision', function (event) {
-            console.log(event);
             if (event.name === "Ground") {
                 console.log("player hit the ground");
                 isGrounded = true;
@@ -308,7 +317,7 @@ var game = (function () {
         //camera.lookAt(new Vector3(0, 0, 0));
         console.log("Finished setting up Camera...");
     }
-    window.onload = init;
+    window.onload = preload;
     return {
         scene: scene
     };
