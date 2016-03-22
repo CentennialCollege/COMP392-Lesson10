@@ -55,6 +55,8 @@ var game = (() => {
     var groundTexture: Texture;
     var groundTextureNormal: Texture;
     var clock: Clock;
+
+    // THREEJS and PHYSIJS Objects
     var playerGeometry: CubeGeometry;
     var playerMaterial: Physijs.Material;
     var player: Physijs.Mesh;
@@ -69,6 +71,10 @@ var game = (() => {
     var directionLineMaterial: LineBasicMaterial;
     var directionLineGeometry: Geometry;
     var directionLine: Line;
+
+    var coinGeometry: Geometry;
+    var coinMaterial: Physijs.Material;
+    var coin: Physijs.ConvexMesh;
 
     // CreateJS Related Variables
     var assets: createjs.LoadQueue;
@@ -137,7 +143,7 @@ var game = (() => {
 
         // Set Up Scoreboard
         setupScoreboard();
-        
+
         //check to see if pointerlock is supported
         havePointerLock = 'pointerLockElement' in document ||
             'mozPointerLockElement' in document ||
@@ -242,6 +248,9 @@ var game = (() => {
         scene.add(player);
         console.log("Added Player to Scene");
 
+        // Add custom coin imported from Blender
+        addCoinMesh();
+
         // Collision Check
         player.addEventListener('collision', (event) => {
             if (event.name === "Ground") {
@@ -249,8 +258,9 @@ var game = (() => {
                 isGrounded = true;
                 createjs.Sound.play("land");
             }
-            if (event.name === "Sphere") {
-                console.log("player hit the sphere");
+            if (event.name === "Coin") {
+                console.log("player hit coin");
+
             }
         });
 
@@ -287,6 +297,54 @@ var game = (() => {
         scene.simulate();
 
         window.addEventListener('resize', onWindowResize, false);
+    }
+
+    function setCenter ( geometry:Geometry ): Vector3 {
+
+		geometry.computeBoundingBox();
+
+		var bb = geometry.boundingBox;
+
+		var offset = new THREE.Vector3();
+
+		offset.addVectors( bb.min, bb.max );
+		offset.multiplyScalar( -0.5 );
+
+		geometry.applyMatrix( new THREE.Matrix4().makeTranslation( offset.x, offset.y, offset.z ) );
+		geometry.computeBoundingBox();
+
+		return offset;
+	}
+
+    // Add the Coin to the scene
+    function addCoinMesh(): void {
+        coinGeometry = new Geometry();
+        coinMaterial = Physijs.createMaterial(new LambertMaterial());
+        coin = new Physijs.ConvexMesh(coinGeometry, coinMaterial);
+
+
+        var coinLoader = new THREE.JSONLoader().load("../../Assets/imported/coin.json", function(geometry: THREE.Geometry) {
+            var phongMaterial = new PhongMaterial({ color: 0xE7AB32 });
+            phongMaterial.emissive = new THREE.Color(0xE7AB32);
+            var coinMaterial = Physijs.createMaterial((phongMaterial), 0.4, 0.6);
+            coin = new Physijs.ConvexMesh(geometry, coinMaterial);     
+            coin.receiveShadow = true;
+            coin.castShadow = true;
+            coin.name = "Coin";
+            scene.add(coin);
+            //setCoinPosition();
+
+        });
+
+        console.log("Added Coin Mesh to Scene");
+    }
+
+    // Set Coin Position
+    function setCoinPosition(): void {
+        var randomPointX: number = Math.floor(Math.random() * 20) - 10;
+        var randomPointZ: number = Math.floor(Math.random() * 20) - 10;
+        coin.position.set(randomPointX, 10, randomPointZ);
+        scene.add(coin);
     }
 
     //PointerLockChange Event Handler
@@ -342,6 +400,8 @@ var game = (() => {
     function gameLoop(): void {
         stats.update();
 
+        coin.setAngularFactor(new Vector3(0, 0, 0));
+        coin.setAngularVelocity(new Vector3(0, 1, 0));
         checkControls();
         stage.update();
 
