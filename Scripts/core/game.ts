@@ -332,7 +332,7 @@ var game = (() => {
             coin.castShadow = true;
             coin.name = "Coin";
             scene.add(coin);
-            //setCoinPosition();
+            setCoinPosition();
 
         });
 

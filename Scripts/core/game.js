@@ -266,7 +266,7 @@ var game = (function () {
             coin.castShadow = true;
             coin.name = "Coin";
             scene.add(coin);
-            //setCoinPosition();
+            setCoinPosition();
         });
         console.log("Added Coin Mesh to Scene");
     }
