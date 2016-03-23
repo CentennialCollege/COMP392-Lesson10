@@ -75,6 +75,7 @@ var game = (() => {
     var coinGeometry: Geometry;
     var coinMaterial: Physijs.Material;
     var coin: Physijs.ConvexMesh;
+    var coins: Physijs.ConcaveMesh[];
 
     // CreateJS Related Variables
     var assets: createjs.LoadQueue;
@@ -326,21 +327,20 @@ var game = (() => {
         var coinLoader = new THREE.JSONLoader().load("../../Assets/imported/coin.json", function(geometry: THREE.Geometry) {
             var phongMaterial = new PhongMaterial({ color: 0xE7AB32 });
             phongMaterial.emissive = new THREE.Color(0xE7AB32);
+            
             var coinMaterial = Physijs.createMaterial((phongMaterial), 0.4, 0.6);
             coin = new Physijs.ConvexMesh(geometry, coinMaterial);     
             coin.receiveShadow = true;
             coin.castShadow = true;
             coin.name = "Coin";
-            scene.add(coin);
-            setCoinPosition();
-
+            setCoinPosition(coin);
         });
 
         console.log("Added Coin Mesh to Scene");
     }
 
     // Set Coin Position
-    function setCoinPosition(): void {
+    function setCoinPosition(coin:Physijs.ConvexMesh): void {
         var randomPointX: number = Math.floor(Math.random() * 20) - 10;
         var randomPointZ: number = Math.floor(Math.random() * 20) - 10;
         coin.position.set(randomPointX, 10, randomPointZ);

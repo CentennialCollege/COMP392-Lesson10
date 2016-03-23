@@ -67,6 +67,7 @@ var game = (function () {
     var coinGeometry;
     var coinMaterial;
     var coin;
+    var coins;
     // CreateJS Related Variables
     var assets;
     var canvas;
@@ -265,13 +266,12 @@ var game = (function () {
             coin.receiveShadow = true;
             coin.castShadow = true;
             coin.name = "Coin";
-            scene.add(coin);
-            setCoinPosition();
+            setCoinPosition(coin);
         });
         console.log("Added Coin Mesh to Scene");
     }
     // Set Coin Position
-    function setCoinPosition() {
+    function setCoinPosition(coin) {
         var randomPointX = Math.floor(Math.random() * 20) - 10;
         var randomPointZ = Math.floor(Math.random() * 20) - 10;
         coin.position.set(randomPointX, 10, randomPointZ);
