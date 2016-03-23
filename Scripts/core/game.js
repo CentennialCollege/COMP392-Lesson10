@@ -66,8 +66,8 @@ var game = (function () {
     var directionLine;
     var coinGeometry;
     var coinMaterial;
-    var coin;
     var coins;
+    var cointCount = 10;
     // CreateJS Related Variables
     var assets;
     var canvas;
@@ -77,7 +77,9 @@ var game = (function () {
     var scoreValue;
     var livesValue;
     var manifest = [
-        { id: "land", src: "../../Assets/audio/Land.wav" }
+        { id: "land", src: "../../Assets/audio/Land.wav" },
+        { id: "hit", src: "../../Assets/audio/hit.wav" },
+        { id: "coin", src: "../../Assets/audio/coin.mp3" }
     ];
     function preload() {
         assets = new createjs.LoadQueue();
@@ -204,14 +206,19 @@ var game = (function () {
         // Add custom coin imported from Blender
         addCoinMesh();
         // Collision Check
-        player.addEventListener('collision', function (event) {
-            if (event.name === "Ground") {
+        player.addEventListener('collision', function (eventObject) {
+            if (eventObject.name === "Ground") {
                 console.log("player hit the ground");
                 isGrounded = true;
                 createjs.Sound.play("land");
             }
-            if (event.name === "Coin") {
+            if (eventObject.name === "Coin") {
                 console.log("player hit coin");
+                createjs.Sound.play("coin");
+                scene.remove(eventObject);
+                setCoinPosition(eventObject);
+                scoreValue += 100;
+                scoreLabel.text = "SCORE: " + scoreValue;
             }
         });
         // Add DirectionLine
@@ -255,18 +262,18 @@ var game = (function () {
     }
     // Add the Coin to the scene
     function addCoinMesh() {
-        coinGeometry = new Geometry();
-        coinMaterial = Physijs.createMaterial(new LambertMaterial());
-        coin = new Physijs.ConvexMesh(coinGeometry, coinMaterial);
+        coins = new Array(); // Instantiate a convex mesh array
         var coinLoader = new THREE.JSONLoader().load("../../Assets/imported/coin.json", function (geometry) {
             var phongMaterial = new PhongMaterial({ color: 0xE7AB32 });
             phongMaterial.emissive = new THREE.Color(0xE7AB32);
             var coinMaterial = Physijs.createMaterial((phongMaterial), 0.4, 0.6);
-            coin = new Physijs.ConvexMesh(geometry, coinMaterial);
-            coin.receiveShadow = true;
-            coin.castShadow = true;
-            coin.name = "Coin";
-            setCoinPosition(coin);
+            for (var count = 0; count < cointCount; count++) {
+                coins[count] = new Physijs.ConvexMesh(geometry, coinMaterial);
+                coins[count].receiveShadow = true;
+                coins[count].castShadow = true;
+                coins[count].name = "Coin";
+                setCoinPosition(coins[count]);
+            }
         });
         console.log("Added Coin Mesh to Scene");
     }
@@ -325,8 +332,10 @@ var game = (function () {
     // Setup main game loop
     function gameLoop() {
         stats.update();
-        coin.setAngularFactor(new Vector3(0, 0, 0));
-        coin.setAngularVelocity(new Vector3(0, 1, 0));
+        coins.forEach(function (coin) {
+            coin.setAngularFactor(new Vector3(0, 0, 0));
+            coin.setAngularVelocity(new Vector3(0, 1, 0));
+        });
         checkControls();
         stage.update();
         // render using requestAnimationFrame

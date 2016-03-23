@@ -74,8 +74,9 @@ var game = (() => {
 
     var coinGeometry: Geometry;
     var coinMaterial: Physijs.Material;
-    var coin: Physijs.ConvexMesh;
+
     var coins: Physijs.ConcaveMesh[];
+    var cointCount: number = 10;
 
     // CreateJS Related Variables
     var assets: createjs.LoadQueue;
@@ -88,7 +89,9 @@ var game = (() => {
 
 
     var manifest = [
-        { id: "land", src: "../../Assets/audio/Land.wav" }
+        { id: "land", src: "../../Assets/audio/Land.wav" },
+        { id: "hit", src: "../../Assets/audio/hit.wav" },
+        { id: "coin", src: "../../Assets/audio/coin.mp3" }
     ];
 
     function preload(): void {
@@ -253,15 +256,19 @@ var game = (() => {
         addCoinMesh();
 
         // Collision Check
-        player.addEventListener('collision', (event) => {
-            if (event.name === "Ground") {
+        player.addEventListener('collision', (eventObject) => {
+            if (eventObject.name === "Ground") {
                 console.log("player hit the ground");
                 isGrounded = true;
                 createjs.Sound.play("land");
             }
-            if (event.name === "Coin") {
+            if (eventObject.name === "Coin") {
                 console.log("player hit coin");
-
+                createjs.Sound.play("coin");
+                scene.remove(eventObject);
+                setCoinPosition(eventObject);
+                scoreValue += 100;
+                scoreLabel.text = "SCORE: " + scoreValue;
             }
         });
 
@@ -319,21 +326,22 @@ var game = (() => {
 
     // Add the Coin to the scene
     function addCoinMesh(): void {
-        coinGeometry = new Geometry();
-        coinMaterial = Physijs.createMaterial(new LambertMaterial());
-        coin = new Physijs.ConvexMesh(coinGeometry, coinMaterial);
-
+        
+        coins = new Array<Physijs.ConvexMesh>(); // Instantiate a convex mesh array
 
         var coinLoader = new THREE.JSONLoader().load("../../Assets/imported/coin.json", function(geometry: THREE.Geometry) {
             var phongMaterial = new PhongMaterial({ color: 0xE7AB32 });
             phongMaterial.emissive = new THREE.Color(0xE7AB32);
             
             var coinMaterial = Physijs.createMaterial((phongMaterial), 0.4, 0.6);
-            coin = new Physijs.ConvexMesh(geometry, coinMaterial);     
-            coin.receiveShadow = true;
-            coin.castShadow = true;
-            coin.name = "Coin";
-            setCoinPosition(coin);
+            
+            for(var count:number = 0; count < cointCount; count++) {
+                coins[count] = new Physijs.ConvexMesh(geometry, coinMaterial);     
+                coins[count].receiveShadow = true;
+                coins[count].castShadow = true;
+                coins[count].name = "Coin";
+                setCoinPosition(coins[count]);
+            }
         });
 
         console.log("Added Coin Mesh to Scene");
@@ -400,8 +408,11 @@ var game = (() => {
     function gameLoop(): void {
         stats.update();
 
-        coin.setAngularFactor(new Vector3(0, 0, 0));
-        coin.setAngularVelocity(new Vector3(0, 1, 0));
+        coins.forEach(coin => {
+            coin.setAngularFactor(new Vector3(0, 0, 0));
+            coin.setAngularVelocity(new Vector3(0, 1, 0));
+        });
+
         checkControls();
         stage.update();
 
