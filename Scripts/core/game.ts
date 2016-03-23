@@ -77,6 +77,10 @@ var game = (() => {
 
     var coins: Physijs.ConcaveMesh[];
     var cointCount: number = 10;
+    
+    var deathPlaneGeometry: CubeGeometry;
+    var deathPlaneMaterial: Physijs.Material;
+    var deathPlane: Physijs.Mesh;
 
     // CreateJS Related Variables
     var assets: createjs.LoadQueue;
@@ -91,7 +95,8 @@ var game = (() => {
     var manifest = [
         { id: "land", src: "../../Assets/audio/Land.wav" },
         { id: "hit", src: "../../Assets/audio/hit.wav" },
-        { id: "coin", src: "../../Assets/audio/coin.mp3" }
+        { id: "coin", src: "../../Assets/audio/coin.mp3" },
+        { id: "jump", src: "../../Assets/audio/Jump.wav" }
     ];
 
     function preload(): void {
@@ -255,20 +260,29 @@ var game = (() => {
         // Add custom coin imported from Blender
         addCoinMesh();
 
+        addDeathPlane();
+
         // Collision Check
         player.addEventListener('collision', (eventObject) => {
             if (eventObject.name === "Ground") {
-                console.log("player hit the ground");
                 isGrounded = true;
                 createjs.Sound.play("land");
             }
             if (eventObject.name === "Coin") {
-                console.log("player hit coin");
                 createjs.Sound.play("coin");
                 scene.remove(eventObject);
                 setCoinPosition(eventObject);
                 scoreValue += 100;
                 scoreLabel.text = "SCORE: " + scoreValue;
+            }
+            
+            if(eventObject.name === "DeathPlane") {
+                createjs.Sound.play("hit");
+                livesValue--;
+                livesLabel.text = "LIVES: " + livesValue;
+                scene.remove(player);
+                player.position.set(0, 30, 10);
+                scene.add(player);
             }
         });
 
@@ -324,6 +338,16 @@ var game = (() => {
 		return offset;
 	}
 
+    function addDeathPlane():void {
+        deathPlaneGeometry = new BoxGeometry(100, 1, 100);
+        deathPlaneMaterial = Physijs.createMaterial(new MeshBasicMaterial({color: 0xff0000}), 0.4, 0.6);
+       
+        deathPlane =  new Physijs.BoxMesh(deathPlaneGeometry, deathPlaneMaterial, 0);
+        deathPlane.position.set(0, -10, 0);
+        deathPlane.name = "DeathPlane";
+        scene.add(deathPlane);
+}
+    
     // Add the Coin to the scene
     function addCoinMesh(): void {
         
@@ -450,7 +474,9 @@ var game = (() => {
                     velocity.y += 4000.0 * delta;
                     if (player.position.y > 4) {
                         isGrounded = false;
+                        createjs.Sound.play("jump"); 
                     }
+                    
                 }
 
                 player.setDamping(0.7, 0.1);
